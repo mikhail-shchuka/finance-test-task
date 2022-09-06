@@ -1,4 +1,5 @@
 'use strict';
+
 const express = require('express');
 const http = require('http');
 const io = require('socket.io');
@@ -7,7 +8,7 @@ const cors = require('cors');
 const FETCH_INTERVAL = 5000;
 const PORT = process.env.PORT || 4000;
 
-const tickers = [
+const initialTickers = [
   'AAPL', // Apple
   'GOOGL', // Alphabet
   'MSFT', // Microsoft
@@ -16,18 +17,23 @@ const tickers = [
   'TSLA', // Tesla
 ];
 
+let tickers = [...initialTickers];
+
 function randomValue(min = 0, max = 1, precision = 0) {
   const random = Math.random() * (max - min) + min;
+
   return random.toFixed(precision);
 }
 
 function utcDate() {
   const now = new Date();
-  return new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
+
+  return new Date(now.getUTCFullYear(), now.getUTCMonth(),
+    now.getUTCDate(), now.getUTCHours(),
+    now.getUTCMinutes(), now.getUTCSeconds());
 }
 
 function getQuotes(socket) {
-
   const quotes = tickers.map(ticker => ({
     ticker,
     exchange: 'NASDAQ',
@@ -39,7 +45,11 @@ function getQuotes(socket) {
     last_trade_time: utcDate(),
   }));
 
-  socket.emit('ticker', quotes);
+  if (socket && tickers.length > 0) {
+    socket.emit('ticker', quotes);
+  } else {
+    return quotes;
+  }
 }
 
 function trackTickers(socket) {
@@ -47,33 +57,72 @@ function trackTickers(socket) {
   getQuotes(socket);
 
   // every N seconds
-  const timer = setInterval(function() {
+  let timer = setInterval(function() {
     getQuotes(socket);
   }, FETCH_INTERVAL);
 
   socket.on('disconnect', function() {
     clearInterval(timer);
   });
+
+  return (interval) => {
+    clearInterval(timer);
+
+    timer = setInterval(function() {
+      getQuotes(socket);
+    }, interval);
+  };
 }
 
+let trackControl;
+
 const app = express();
+
 app.use(cors());
+
 const server = http.createServer(app);
+
+app.use(express.json());
 
 const socketServer = io(server, {
   cors: {
-    origin: "*",
-  }
+    origin: '*',
+  },
+});
+
+socketServer.on('connection', (socket) => {
+  socket.on('start', () => {
+    tickers = [...initialTickers];
+    trackControl = trackTickers(socket);
+  });
 });
 
 app.get('/', function(req, res) {
   res.sendFile(__dirname + '/index.html');
 });
 
-socketServer.on('connection', (socket) => {
-  socket.on('start', () => {
-    trackTickers(socket);
-  });
+app.post('/tickers', function(req, res) {
+  if (!req.body) {
+    return res.sendStatus(400);
+  }
+
+  tickers.push(req.body.ticker);
+  res.send({ tickers: getQuotes() });
+});
+
+app.post('/interval', function(req, res) {
+  if (!req.body) {
+    return res.sendStatus(400);
+  }
+
+  trackControl(req.body.interval);
+  res.sendStatus(200);
+});
+
+app.delete('/tickers/:ticker', function(req, res) {
+  tickers = tickers.filter(ticker => ticker !== req.params.ticker);
+
+  res.send({ 'tickers': getQuotes() });
 });
 
 server.listen(PORT, () => {

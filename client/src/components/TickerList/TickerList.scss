@@ -1,0 +1,134 @@
+@mixin ticker {
+  background-color: #eee;
+  display: flex;
+  justify-content: space-between;
+  width: max-content;
+  height: 40px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #777;
+  gap: 10px;
+}
+
+.tickers {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 0;
+  gap: 40px;
+
+  &__item {
+    @include ticker();
+    list-style: none;
+    position: relative;
+    background-color: #ccc;
+    border-color: transparent;
+
+    &:hover {
+      .tickers__delete-ticker {
+        display: block;
+      }
+    }
+  }
+
+  &__new-ticker {
+    background-color: #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: max-content;
+    height: 40px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #777;
+    box-sizing: content-box;
+    gap: 10px;
+
+    &:hover {
+      background-color: #ccc;
+      border-color: transparent;
+    }
+
+    &:active {
+      transform: scale(1.05);
+    }
+  }
+
+  &__delete-ticker {
+    display: none;
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    height: 20px;
+    width: 20px;
+    text-align: center;
+    padding: 0;
+    border: none;
+    background: none;
+    border-radius: 50%;
+    background-image: url("../../icons/cross-in-cloud.png");
+    background-size: cover;
+
+    &:hover {
+      border: 2px solid #777;
+    }
+
+    &:active {
+      border: none;
+      background-color: #777;
+    }
+  }
+
+  &__name {
+    padding-bottom: 5px;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  &__price {
+    text-align: center;
+    color: #137333;
+    font-weight: bold;
+
+    &--down {
+      color: #A40C0C;
+    }
+  }
+
+  &__new-title {
+    height: 100%;
+  }
+
+}
+
+.icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+
+  &__img {
+    background-color: #B1DDBE;
+    border-radius: 50%;
+
+    &--down {
+      transform: rotate(180deg);
+      background-color: #FFA3A3;
+    }
+  }
+}
+
+.option-enter {
+  opacity: 0;
+}
+.option-enter-active {
+  opacity: 1;
+  transition: opacity 1000ms;
+}
+.option-exit {
+  opacity: 0;
+}
+.option-exit-active {
+  opacity: 1;
+  transition: opacity 1000ms;
+}

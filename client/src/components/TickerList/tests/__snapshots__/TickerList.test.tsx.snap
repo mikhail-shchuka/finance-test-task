@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TickerList should match with snapshot 1`] = `
+<body>
+  <div>
+    <ul
+      class="tickers"
+    >
+      <div
+        data-testid="listItem-test-id"
+      />
+      <div
+        data-testid="newTicker-test-id"
+      />
+    </ul>
+  </div>
+</body>
+`;

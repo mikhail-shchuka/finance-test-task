@@ -2,10 +2,10 @@
 # React Test Task
 
 ## Created bonus functionality:
-additional visual effects to highlight positive or negative price changes;
-the possibility to delete/create tickers by user;
-the possibility to specify interval time by user
-graphical display of price change history.
+* additional visual effects to highlight positive or negative price changes;
+* the possibility to delete/create tickers by user;
+* the possibility to specify interval time by user
+* graphical display of price change history.
 
 ## Requirements
 

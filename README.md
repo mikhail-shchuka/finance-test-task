@@ -1,6 +1,12 @@
 
 # React Test Task
 
+## Created bonus functionality:
+additional visual effects to highlight positive or negative price changes;
+the possibility to delete/create tickers by user;
+the possibility to specify interval time by user
+graphical display of price change history.
+
 ## Requirements
 
 We need you to implement a solution to display price tickers data on the UI in realtime.
